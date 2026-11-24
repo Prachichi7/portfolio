@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prachi · Messy data in, working systems out</title>
+<meta name="description" content="Prachi — MSc Data Science at SRMIST. ML/AI projects, research and Indian Sign Language recognition. Portfolio.">
+<meta name="theme-color" content="#0b1020">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230b1020'/%3E%3Ctext x='32' y='46' font-family='sans-serif' font-weight='800' font-size='42' text-anchor='middle' fill='%23f4b53f'%3EP%3C/text%3E%3C/svg%3E">
+<!-- After your first deploy, replace YOUR-SITE.vercel.app below with your real address so link previews show the image -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="Prachi · Messy data in, working systems out">
+<meta property="og:description" content="MSc Data Science at SRMIST. ML/AI projects, research and Indian Sign Language recognition.">
+<meta property="og:image" content="https://YOUR-SITE.vercel.app/assets/og.png">
+<meta property="og:url" content="https://YOUR-SITE.vercel.app/">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,700;12..96,800&family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0b1020;--ink:#f3efe6;--dim:#9aa3bd;--marigold:#f4b53f;--aqua:#7fe3d6;--panel:rgba(11,16,32,.74);--line:rgba(243,239,230,.14)}
+*{box-sizing:border-box;margin:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--ink);font-family:'Bricolage Grotesque','Noto Sans JP','Hiragino Sans','Yu Gothic',system-ui,sans-serif;line-height:1.6;overflow-x:hidden}
+canvas#c{position:fixed;inset:0;width:100%;height:100%;z-index:0}
+.hud{position:fixed;top:0;left:0;right:0;z-index:5;display:flex;justify-content:space-between;align-items:center;gap:10px;padding:14px 28px;font:500 13px 'IBM Plex Mono',monospace;color:var(--dim);background:linear-gradient(var(--bg),transparent)}
+.stages{display:flex;gap:6px}
+.stages span,.lang button{padding:5px 12px;border:1px solid var(--line);border-radius:99px;transition:.4s}
+.stages span.on{color:var(--bg);background:var(--marigold);border-color:var(--marigold)}
+.stages span.on.l{background:var(--aqua);border-color:var(--aqua)}
+.right-hud{display:flex;align-items:center;gap:18px}
+.lang{display:flex;gap:5px}
+.lang button{font:inherit;background:none;color:var(--dim);cursor:pointer}
+.lang button.on{color:var(--bg);background:var(--ink);border-color:var(--ink)}
+.lang button:focus-visible{outline:2px solid var(--marigold);outline-offset:2px}
+#rows b{color:var(--ink);font-weight:500}
+section{position:relative;z-index:2;min-height:110vh;display:flex;align-items:center;padding:12vh 7vw}
+.card{max-width:640px;background:var(--panel);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid var(--line);border-radius:18px;padding:34px 38px}
+.right{justify-content:flex-end}
+h1{font-size:clamp(42px,8.4vw,108px);line-height:1;font-weight:800;letter-spacing:-.035em}
+h1 em{font-style:normal;color:var(--marigold)}
+h2{font-size:clamp(28px,4.4vw,50px);line-height:1.1;font-weight:800;letter-spacing:-.025em;margin-bottom:16px}
+html[lang=ja] h1,html[lang=ja] h2{letter-spacing:0;line-height:1.25}
+p{color:#d7d9e4;max-width:60ch;margin-top:12px}
+.hero .card{background:none;border:0;backdrop-filter:none;padding:0;max-width:900px}
+.hero p{font-size:19px;color:var(--ink)}
+.hero h1,.hero p{text-shadow:0 2px 24px var(--bg),0 0 8px var(--bg)}
+.hint{margin-top:34px;font:400 13px 'IBM Plex Mono',monospace;color:var(--dim)}
+.proj{display:grid;gap:14px;margin-top:20px}
+.proj article{position:relative;padding:16px 18px;border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,.03);transition:border-color .25s,transform .25s}
+.proj article:hover{border-color:var(--marigold);transform:translateX(6px)}
+.proj article:has(a.ov){cursor:pointer}
+.proj a.ov{position:absolute;inset:0;border-radius:12px}
+.proj a.ov:focus-visible{outline:2px solid var(--marigold);outline-offset:3px}
+.proj h3{font-size:20px;font-weight:700}
+.proj small{display:block;font:400 12px 'IBM Plex Mono',monospace;color:var(--marigold);margin:2px 0 6px}
+.proj p{margin:0;font-size:15px}
+.tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+.tags span{font:400 12px 'IBM Plex Mono',monospace;padding:4px 10px;border:1px solid var(--line);border-radius:6px;color:var(--aqua)}
+.links{display:flex;flex-wrap:wrap;gap:12px;margin-top:26px}
+.links a{color:var(--bg);background:var(--aqua);padding:12px 22px;border-radius:99px;font-weight:700;text-decoration:none;transition:transform .2s}
+.links a.alt{background:none;color:var(--ink);border:1px solid var(--ink)}
+.links a:hover,.links a:focus-visible{transform:translateY(-3px);outline:2px solid var(--marigold);outline-offset:3px}
+.log{font:400 13px/1.7 'IBM Plex Mono',monospace;color:var(--aqua);margin-top:22px}
+.log i{font-style:normal;color:var(--dim)}
+.term{margin-top:22px;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:rgba(5,8,18,.8);font:400 13px/1 'IBM Plex Mono',monospace}
+.term .bar{display:flex;align-items:center;gap:7px;padding:10px 14px;border-bottom:1px solid var(--line);color:var(--dim)}
+.term .bar b{width:10px;height:10px;border-radius:50%;background:#3a4262}
+.term .bar b:first-child{background:#f4b53f}.term .bar b:nth-child(2){background:#7fe3d6}
+.term .bar span{margin-left:8px}
+.term .row{display:grid;grid-template-columns:44px 1fr auto;gap:10px;padding:11px 14px;border-bottom:1px solid rgba(243,239,230,.06);color:#d7d9e4}
+.term .row:last-child{border:0}
+.term .ok{color:var(--aqua)}.term .run{color:var(--marigold)}
+.term em{font-style:normal;color:var(--dim)}
+.term .cur{display:inline-block;width:8px;height:14px;margin-left:4px;background:var(--marigold);vertical-align:-2px;animation:bl 1s steps(1) infinite}
+@keyframes bl{50%{opacity:0}}
+@media(prefers-reduced-motion:reduce){.term .cur{animation:none}}
+.edu{display:grid;gap:14px;margin-top:20px}
+.edu article{display:flex;align-items:center;gap:18px;padding:20px 22px;border-radius:14px;background:rgba(255,255,255,.04);border-left:4px solid var(--marigold)}
+.edu article.b{border-left-color:var(--aqua)}
+.edu h3{font-size:clamp(20px,2.8vw,28px);font-weight:800;letter-spacing:-.02em;line-height:1.2}
+.edu small{display:block;margin-top:6px;font:400 13px 'IBM Plex Mono',monospace;color:var(--dim)}
+.logo{position:relative;flex:none;width:78px;height:78px;border-radius:12px;background:var(--ink);display:grid;place-items:center;overflow:hidden}
+.logo b{color:var(--bg);font:800 14px 'Bricolage Grotesque',sans-serif}
+.logo img{position:absolute;inset:6px;width:calc(100% - 12px);height:calc(100% - 12px);object-fit:contain}
+.card a.txt{color:var(--aqua)}
+section.tight{min-height:0;padding:6vh 7vw}
+.card.bold{background:rgba(8,12,26,.95);border:2px solid rgba(244,181,63,.4)}
+.card.bold h2{font-size:clamp(34px,5.2vw,60px);padding-bottom:10px;border-bottom:3px solid var(--marigold)}
+.card.bold .proj article{padding:20px 22px;background:rgba(244,181,63,.08);border:1px solid rgba(244,181,63,.35);border-left:6px solid var(--marigold)}
+.card.bold .proj h3{font-size:clamp(22px,3vw,28px);font-weight:800;letter-spacing:-.01em}
+.card.bold .proj small{font-size:13px;color:var(--aqua)}
+.card.bold .proj p{color:#eceef6;font-size:15.5px}
+.bul{margin:14px 0 0;padding-left:20px;color:#d7d9e4;max-width:62ch}
+.bul li{margin-top:9px;font-size:15px}
+.quiet{margin-top:18px;padding-top:14px;border-top:1px solid var(--line);font-size:15px;font-weight:700;color:var(--ink);max-width:none}
+section{pointer-events:none}
+.hero p.hint{font-size:12px;margin-top:26px}
+.hero p.sub{font-size:16px;color:#e6e8f2}
+.hero .intro{max-width:660px;padding:22px 26px;border-left:5px solid var(--marigold);border-radius:0 16px 16px 0;background:rgba(8,12,26,.86);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);box-shadow:0 0 40px rgba(244,181,63,.12)}
+.hero .intro p:first-child{margin-top:0;font-weight:500}
+.hero strong{color:var(--marigold);font-weight:800}
+.role{font:500 13px 'IBM Plex Mono',monospace;color:var(--marigold);margin:-4px 0 6px;max-width:none}
+.go{display:block;margin-top:12px;font:500 12px 'IBM Plex Mono',monospace;color:var(--marigold)}.card,footer{pointer-events:auto}
+.card.wide{max-width:min(980px,88vw)}
+.card.solid{background:#0d1326;backdrop-filter:none;-webkit-backdrop-filter:none}
+.grid2{grid-template-columns:1fr 1fr}.grid2 .feat{grid-column:1/-1}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:16px}
+.stats div{padding:12px 14px;border-radius:10px;background:rgba(127,227,214,.08);border:1px solid rgba(127,227,214,.25)}
+.stats b{display:block;font-size:clamp(24px,3.2vw,34px);font-weight:800;color:var(--aqua);line-height:1.1}
+.stats span{font:400 12px/1.4 'IBM Plex Mono',monospace;color:#cfd3e4}
+.card.bold .tags{margin-top:14px}
+@media(max-width:800px){.grid2{grid-template-columns:1fr}.stats{grid-template-columns:1fr}}
+.term a.row{text-decoration:none;cursor:pointer;transition:background .2s}
+.term a.row:hover,.term a.row:focus-visible{background:rgba(127,227,214,.1);outline:none}
+.term a.row em::after{content:" \2197";color:var(--aqua)}
+#hobby{position:fixed;right:7vw;bottom:16vh;z-index:6;padding:18px 26px;border-radius:14px;background:#0d1326;border:2px solid var(--aqua);box-shadow:0 0 36px rgba(127,227,214,.55),0 0 90px rgba(127,227,214,.25);opacity:0;transform:translateY(12px) scale(.96);pointer-events:none;transition:.35s;max-width:84vw}
+#hobby.on{opacity:1;transform:none;pointer-events:auto}
+#hobby small{display:block;font:400 12px 'IBM Plex Mono',monospace;color:var(--aqua)}
+#hobby b{display:block;font-size:clamp(22px,3vw,32px);font-weight:800;margin-top:4px;padding-right:30px}
+#hb-x{position:absolute;top:8px;right:10px;background:none;border:0;cursor:pointer;font-size:24px;color:var(--dim);line-height:1}
+#hint2{position:fixed;right:18px;bottom:18px;z-index:6;font:500 13px 'IBM Plex Mono',monospace;color:var(--aqua);padding:8px 16px;border:1px solid rgba(127,227,214,.5);border-radius:99px;background:rgba(11,16,32,.85);opacity:0;transition:.5s;pointer-events:none;box-shadow:0 0 18px rgba(127,227,214,.35);white-space:nowrap}
+#hint2.show{opacity:1}
+footer{position:relative;z-index:2;text-align:center;padding:30px 30px 90px;font:400 12px 'IBM Plex Mono',monospace;color:var(--dim)}
+@media(max-width:700px){.card{padding:24px}.hud{padding:12px 14px}#rows{display:none}.stages span{padding:4px 8px}}
+p{font-size:18px}
+.hero p.sub{font-size:17.5px}
+.proj p,.card.bold .proj p{font-size:17px;line-height:1.6}
+.bul li{font-size:17px}
+.quiet{font-size:17px}
+.proj small{font-size:14px}.card.bold .proj small{font-size:14px}
+.edu small{font-size:15px}
+.stats span{font-size:13px}.tags span{font-size:13px}
+.role{font-size:14px}
+[hidden]{display:none!important}
+.lite{font:inherit;padding:5px 12px;border:1px solid var(--line);border-radius:99px;background:none;color:var(--dim);cursor:pointer}
+.lite[aria-pressed=true]{color:var(--bg);background:var(--aqua);border-color:var(--aqua)}
+.lite:focus-visible{outline:2px solid var(--marigold);outline-offset:2px}
+</style>
+</head>
+<body>
+<noscript><p style="padding:40px;max-width:560px">This portfolio needs JavaScript. Find Prachi on <a href="https://github.com/Prachichi7" style="color:#7fe3d6">GitHub</a> or <a href="https://www.linkedin.com/in/prachi-gautam-5a3987261" style="color:#7fe3d6">LinkedIn</a>.</p></noscript>
+<canvas id="c" aria-hidden="true"></canvas>
+<div class="hud">
+  <div class="stages"><span id="s0" class="on">extract</span><span id="s1">transform</span><span id="s2" class="l">load</span></div>
+  <div class="right-hud">
+    <div id="rows"><span data-i="rows"></span> <b id="rc">0</b></div>
+    <button class="lite" id="lite" aria-pressed="false" title="Lighter 3D for slower devices">Lite</button>
+    <div class="lang" role="group" aria-label="Language"><button data-l="en">EN</button><button data-l="de">DE</button><button data-l="ja">日本語</button></div>
+  </div>
+</div>
+
+<section class="hero"><div class="card">
+  <h1 data-i="hero_h"></h1>
+  <div class="intro"><p data-i="hero_p"></p><p class="sub" data-i="hero_p2"></p></div>
+  <p class="hint" data-i="hint"></p>
+</div></section>
+
+<section class="tight"><div class="card">
+  <h2 data-i="ab_h"></h2>
+  <p data-i="ab_p1"></p>
+  <div class="term">
+    <div class="bar"><b></b><b></b><b></b><span>extract.log</span></div>
+    <a class="row" href="#edu"><span class="ok">ok</span><span>read education</span><em>2 records</em></a>
+    <a class="row" href="#isl"><span class="ok">ok</span><span>read experience</span><em>1 record</em></a>
+    <a class="row" href="#research"><span class="ok">ok</span><span>read research</span><em>papers found</em></a>
+    <a class="row" href="#projects"><span class="run">&gt;&gt;</span><span>passing to transform<span class="cur"></span></span><em></em></a>
+  </div>
+</div></section>
+
+<section class="right tight" id="edu"><div class="card">
+  <h2 data-i="ed_h"></h2>
+  <div class="edu">
+    <article><span class="logo"><b>SRM</b><img data-base="assets/srmist" alt="SRMIST logo"></span><div><h3>SRM Institute of Science and Technology (SRMIST)</h3><small data-i="srm_s"></small></div></article>
+    <article class="b"><span class="logo"><b>IMED</b><img data-base="assets/imed assets/bvp" alt="Bharati Vidyapeeth logo"></span><div><h3>Bharati Vidyapeeth's Institute of Management and Entrepreneurship Development (IMED), Pune</h3><small data-i="imed_s"></small></div></article>
+  </div>
+</div></section>
+
+<section id="projects"><div class="card bold wide">
+  <h2 data-i="pr_h"></h2>
+  <div class="proj grid2">
+    <article class="feat"><a class="ov" href="https://github.com/Prachichi7/Hallu-Scan" target="_blank" rel="noopener" aria-label="HalluScan on GitHub"></a><h3>HalluScan</h3><small data-i="hallu_s"></small><p data-i="hallu_p"></p><div class="tags"><span>DeBERTa NLI</span><span>Llama 3.1 8B</span><span>Groq API</span><span>Streamlit</span></div><span class="go" data-i="go_gh"></span></article>
+    <article><a class="ov" href="https://microsaathi-lumahack.streamlit.app/" target="_blank" rel="noopener" aria-label="YayStocks live app"></a><h3>YayStocks</h3><small data-i="yay_s"></small><p data-i="yay_p"></p><div class="tags"><span>Python</span><span>Streamlit</span><span>multi-agent LLM</span><span>yfinance</span><span>Google News RSS</span></div><span class="go" data-i="go_live"></span></article>
+    <article><a class="ov" href="https://microinvest-3mmokycgb9prdra5hktyvl.streamlit.app/" target="_blank" rel="noopener" aria-label="MicroInvest live app"></a><h3>MicroInvest</h3><small data-i="mi_s"></small><p data-i="mi_p"></p><div class="tags"><span>Streamlit</span><span>simulation</span><span>data visualisation</span></div><span class="go" data-i="go_live"></span></article>
+  </div>
+</div></section>
+
+<section class="right" id="research"><div class="card bold wide">
+  <h2 data-i="rs_h"></h2>
+  <div class="proj grid2">
+    <article class="feat"><h3>Multimodal ML for athlete fatigue detection</h3><small data-i="fat_s"></small><p data-i="fat_p"></p><p data-i="fat_p2" style="margin-top:10px"></p>
+      <div class="stats"><div><b>2</b><span data-i="st1"></span></div><div><b>3,082</b><span data-i="st2"></span></div><div><b>PM10</b><span data-i="st3"></span></div></div>
+      <div class="tags"><span>multimodal ML</span><span>late-fusion ensemble</span><span>SHAP</span><span>CPCB air-quality data</span></div></article>
+    <article><a class="ov" href="https://www.bvuniversity.edu.in/Uploads/moduleimg/9956imguf_ReflectionJulDec23(1).pdf" target="_blank" rel="noopener" aria-label="IoT research article (PDF)"></a><h3>Research article on Internet of Things (IoT)</h3><small data-i="iot_s"></small><p data-i="iot_p"></p><div class="tags"><span>blockchain</span><span>industrial IoT</span><span>data integrity</span></div></article>
+    <article><a class="ov" href="https://www.bvuniversity.edu.in/Uploads/moduleimg/8879imguf_ReflectionJan-June2023.pdf" target="_blank" rel="noopener" aria-label="Ethical hacking research article (PDF)"></a><h3>Research article on ethical hacking</h3><small data-i="eh_s"></small><p data-i="eh_p"></p><div class="tags"><span>ethical hacking</span><span>penetration testing</span><span>security ethics</span></div></article>
+  </div>
+</div></section>
+
+<section id="isl"><div class="card solid wide">
+  <h2 data-i="ss_h"></h2>
+  <p class="role" data-i="ss_role"></p>
+  <p data-i="ss_p1"></p>
+  <p data-i="ss_p2"></p>
+  <ul class="bul"><li data-i="b1"></li><li data-i="b2"></li><li data-i="b3"></li></ul>
+  <div class="tags"><span>python</span><span>pytorch</span><span>computer vision</span><span>ablation studies</span><span>root-cause analysis</span><span>RAG</span><span>LLM evaluation</span></div>
+</div></section>
+
+<section class="right"><div class="card">
+  <h2 data-i="ex_h"></h2>
+  <div class="proj">
+    <article><a class="ov" href="https://github.com/Prachichi7/IITJammu-ds-ai-final-project" target="_blank" rel="noopener" aria-label="IIT Jammu project on GitHub"></a><h3>IIT Jammu</h3><small data-i="jam_s"></small><p data-i="jam_p"></p></article>
+  </div>
+  <p class="quiet" data-i="tf_p"></p>
+</div></section>
+
+<section><div class="card">
+  <h2 data-i="ld_h"></h2>
+  <p data-i="ld_p"></p>
+  <div class="links">
+    <a href="https://www.linkedin.com/in/prachi-gautam-5a3987261" target="_blank" rel="noopener">LinkedIn</a>
+    <a class="alt" href="https://github.com/Prachichi7" target="_blank" rel="noopener">GitHub</a>
+    <a class="alt" href="mailto:prachi2011gautam@gmail.com" data-i="b_email"></a>
+    <a class="alt" id="resume" href="#" target="_blank" rel="noopener" data-i="b_resume" hidden></a>
+  </div>
+  <div class="log"><i>›</i> load --target "you" ... <span style="color:var(--marigold)">done, 0 errors</span></div>
+</div></section>
+<div id="hobby" role="status"><small id="hb-l"></small><b id="hb-t"></b><button id="hb-x" aria-label="Close">&times;</button></div>
+<div id="hint2" data-i="hb_hint"></div>
+<footer data-i="foot"></footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function(){
+/* ---------- EDIT ME: paste your resume link between the quotes ----------
+   Google Drive: share the file as 'Anyone with the link can view' and paste that link.
+   To update your resume later, replace the file in Drive via 'Manage versions': the link stays the same.
+   While this is empty the Resume button stays hidden. */
+const RESUME_URL='';
+{const r=document.getElementById('resume');if(RESUME_URL){r.href=RESUME_URL;r.hidden=false}}
+/* ---------- i18n ---------- */
+const a=t=>`<a class="txt" href="https://www.linkedin.com/in/prachi-gautam-5a3987261/" target="_blank" rel="noopener">${t}</a>`;
+const I={
+en:{rows:"rows cleaned:",hero_h:"Messy data in.<br><em>Working systems</em> out.",hero_p2:"I was an <strong>ML/AI Engineer Intern</strong> at <strong>SignSetu</strong>, working on Indian Sign Language recognition, and a Data Science and AI Intern at <strong>IIT Jammu</strong>. I've co-authored a paper on athlete fatigue and air quality and built tools around LLM reliability and beginner investing.",hero_p:"I'm Prachi, an <strong>MSc Data Science</strong> student at <strong>SRMIST</strong>. I build models and pipelines that turn noisy real-world input into something people can use.",hint:"Scroll to run the pipeline. Everything you pass through is part of the portfolio.",
+ab_h:"Extract: Where I'm coming from",ab_p1:"I work with data from the messy end: language models that make things up, signs that don't look the same twice, city records no one cleaned. I'm drawn to privacy-first, anti-algorithmic products and technology that helps people connect, and I like building for Indian context.",ab_p2:"Outside the pipeline, I read books, follow Substack, go out with friends and travel to new places.",
+ed_h:"Extract: Where I studied",srm_s:"MSc Data Science",imed_s:"BCA, 8.85 CGPA",
+pr_h:"Transform: Things I've built",hallu_s:"dual-layer LLM hallucination detection",hallu_p:"Checks whether a language model's answer is faithful to its source. Layer 1, a DeBERTa NLI model, quickly clears the clear-cut cases. Ambiguous ones go to Layer 2, where Llama 3.1 8B (via the Groq API) acts as a judge and returns a verdict (hallucinated or partially hallucinated), a reason and the offending span.",yay_s:"stock education for beginners, India-first",yay_p:"A Python and Streamlit app that explains NSE/BSE stocks in plain language and INR context. A multi-agent LLM pipeline (Bull Case, Bear Case, Summary, Glossary and Hindi agents) grounds its explanations in live yfinance data and Google News headlines, and a six-factor quiz sorts users into personas like “First-Step Investor”.",mi_s:"round-up micro-investing simulator",mi_p:"A simulation platform that rounds each transaction up to the nearest ₹10 or ₹100 and spreads the spare change across three virtual assets: gold, mutual funds and a savings wallet. It tracks the portfolio and charts its growth over time.",
+rs_h:"Transform: Research Papers",fat_s:"Multimodal paper, co-author",fat_p:"Proposes a framework that fuses wearable sensor signals with air quality data (AQI, PM2.5, PM10) to predict athlete fatigue risk. Analysis of CPCB data for Delhi and Chennai found PM10 to be the most influential predictor. Written with Prisha Shah and Blesson Samuel.",fat_p2:"Preprocessing caught a logging error where one timestamp was repeated 23,380 times. The SHAP analysis also suggested that prolonged exposure, seen in 7-day rolling averages, matters more than short-term spikes.",st1:"cities analysed: Delhi and Chennai",st2:"clean hourly records, from about 38,900 raw rows (Delhi)",st3:"top predictor of fatigue risk in the SHAP analysis",hb_hint:"Click a glowing box",hb_lab:"Hobby",hb1:"Reading books",hb2:"Reading Substack",hb3:"Connecting with friends and community",hb4:"Travelling to new places",iot_s:"research article, IMED, Dec 2023",iot_p:"Showed how current data communication protocols in industrial IoT networks are vulnerable, and proposed a blockchain-based approach that protects data integrity, prevents tampering and enables secure, transparent communication between devices.",eh_s:"research article, IMED, Oct 2023",eh_p:"On how ethical hackers, who deliberately look for weaknesses in computer systems, help organisations defend against attacks, and how to balance security with ethics.",
+ss_h:"Transform: Internship at SignSetu",ss_role:"ML/AI Engineer Intern · May to October 2026 · Indian Sign Language (ISL) recognition",go_gh:"View on GitHub ↗",go_live:"Open live app ↗",ss_p1:"From May to October 2026 I was an ML/AI Engineer Intern at SignSetu, working on Indian Sign Language (ISL) recognition, so that more people can be understood without an interpreter in the room.",ss_p2:"I debugged a Python and PyTorch research pipeline, moved project assets into a version-controlled repository, sped up training data loading, and ran isolated ablation experiments to guide input design. I also led a multi-week root-cause investigation into why accuracy dropped between validation and live video, and handed over scripts and documentation at the end.",b1:"Diagnosed and resolved four environment and dependency blockers in a computer-vision research pipeline, including a tensor-shape mismatch traced to a reproducibility issue in third-party research code.",b2:"Led a multi-week root-cause investigation into a gap between controlled-test and real-world performance in a computer-vision pipeline, using isolated, reproducible experiments and statistical analysis without modifying production code.",b3:"Ran a series of isolated ablation experiments to guide preprocessing and model-input design decisions, maintaining consistency across every stage of the pipeline. Migrated project assets to a structured, version-controlled repository and added caching to speed up training data loading.",ex_h:"Transform: more experience",jam_s:"Data Science and AI Intern, 2025",jam_p:"Worked under professors on AI-driven data analysis and machine learning applications, using Python, machine learning and deep learning on research data, and streamlined data-processing workflows, improving project efficiency by 20% through optimised pipelines.",tf_p:"Also 2023 to 2025: Campus Ambassador Mentor for IIT Bombay's Techfest. I grew its online engagement by 25% through social media, coordinated with 11,500+ college ambassadors, and represented Techfest and IIT Bombay to students.",
+ld_h:"Load: let's connect",ld_p:"The data is clean and the output is ready. If you're building something with real users, I'd like to hear about it.",b_email:"Email",b_resume:"Resume",foot:"Built as a data pipeline. Move the mouse to look around."},
+de:{rows:"Zeilen bereinigt:",hero_h:"Chaotische Daten rein.<br><em>Funktionierende Systeme</em> raus.",hero_p2:"Ich war <strong>ML/AI Engineer Intern</strong> bei <strong>SignSetu</strong> und habe dort an der Erkennung der Indischen Gebärdensprache gearbeitet, außerdem Data Science and AI Intern am <strong>IIT Jammu</strong>. Ich habe eine Arbeit über Ermüdung bei Sportlern und Luftqualität mitverfasst und Werkzeuge rund um die Zuverlässigkeit von LLMs und das Investieren für Einsteiger gebaut.",hero_p:"Ich bin Prachi, Studentin im <strong>Master Data Science</strong> an der <strong>SRMIST</strong>. Ich baue Modelle und Pipelines, die verrauschte Daten aus der realen Welt in etwas verwandeln, das Menschen nutzen können.",hint:"Scrolle, um die Pipeline laufen zu lassen. Alles, was du dabei siehst, gehört zum Portfolio.",
+ab_h:"Extract: Woher ich komme",ab_p1:"Ich arbeite mit Daten vom chaotischen Ende: Sprachmodelle, die Dinge erfinden, Gebärden, die nie zweimal gleich aussehen, Stadtdaten, die niemand bereinigt hat. Mich ziehen datenschutzfreundliche, anti-algorithmische Produkte und Technologie an, die Menschen verbindet, und ich baue gern für den indischen Kontext.",ab_p2:"Außerhalb der Pipeline lese ich Bücher, folge Substack, gehe mit Freunden aus und reise an neue Orte.",
+ed_h:"Extract: Wo ich studiert habe",srm_s:"MSc Data Science",imed_s:"BCA, 8,85 CGPA",
+pr_h:"Transform: Was ich gebaut habe",hallu_s:"zweischichtige Erkennung von LLM-Halluzinationen",hallu_p:"Prüft, ob die Antwort eines Sprachmodells zu ihrer Quelle passt. Schicht 1, ein DeBERTa-NLI-Modell, klärt die eindeutigen Fälle schnell. Unklare Fälle gehen an Schicht 2, in der Llama 3.1 8B (über die Groq-API) als Richter ein Urteil (halluziniert oder teilweise halluziniert), eine Begründung und die betroffene Textstelle liefert.",yay_s:"Aktienbildung für Einsteiger, Indien zuerst",yay_p:"Eine App in Python und Streamlit, die NSE/BSE-Aktien in einfacher Sprache und im INR-Kontext erklärt. Eine Multi-Agenten-LLM-Pipeline (Bull Case, Bear Case, Zusammenfassung, Glossar und Hindi-Agent) stützt ihre Erklärungen auf Live-Daten von yfinance und Schlagzeilen von Google News, und ein Quiz mit sechs Faktoren ordnet Nutzer Personas wie „First-Step Investor“ zu.",mi_s:"Simulator für Mikroinvestments durch Aufrunden",mi_p:"Eine Simulationsplattform, die jede Transaktion auf die nächsten 10 ₹ oder 100 ₹ aufrundet und das Wechselgeld auf drei virtuelle Anlagen verteilt: Gold, Investmentfonds und ein Sparkonto. Sie verfolgt das Portfolio und zeigt dessen Wachstum im Zeitverlauf in Diagrammen.",
+rs_h:"Transform: Forschungsarbeiten",fat_s:"Multimodale Arbeit, Co-Autorin",fat_p:"Schlägt ein Framework vor, das Signale von Wearable-Sensoren mit Luftqualitätsdaten (AQI, PM2.5, PM10) verbindet, um das Ermüdungsrisiko von Sportlern vorherzusagen. Die Analyse von CPCB-Daten aus Delhi und Chennai zeigte PM10 als einflussreichsten Prädiktor. Gemeinsam verfasst mit Prisha Shah und Blesson Samuel.",fat_p2:"Bei der Vorverarbeitung fiel ein Logging-Fehler auf, bei dem ein Zeitstempel 23.380-mal wiederholt wurde. Die SHAP-Analyse deutete zudem darauf hin, dass anhaltende Belastung, sichtbar in 7-Tage-Durchschnitten, wichtiger ist als kurzfristige Spitzen.",st1:"analysierte Städte: Delhi und Chennai",st2:"bereinigte stündliche Datensätze, aus etwa 38.900 Rohzeilen (Delhi)",st3:"wichtigster Prädiktor des Ermüdungsrisikos in der SHAP-Analyse",hb_hint:"Klicke auf eine leuchtende Box",hb_lab:"Hobby",hb1:"Bücher lesen",hb2:"Substack lesen",hb3:"Austausch mit Freunden und Community",hb4:"Neue Orte bereisen",iot_s:"Forschungsartikel, IMED, Dez. 2023",iot_p:"Zeigte, wie anfällig aktuelle Datenübertragungsprotokolle in industriellen IoT-Netzwerken sind, und schlug einen Blockchain-Ansatz vor, der die Datenintegrität schützt, Manipulation verhindert und eine sichere, transparente Kommunikation zwischen Geräten ermöglicht.",eh_s:"Forschungsartikel, IMED, Okt. 2023",eh_p:"Darüber, wie Ethical Hacker, die gezielt nach Schwachstellen in Computersystemen suchen, Organisationen beim Schutz vor Angriffen helfen, und wie sich Sicherheit und Ethik ausbalancieren lassen.",
+ss_h:"Transform: Praktikum bei SignSetu",ss_role:"ML/AI Engineer Intern · Mai bis Oktober 2026 · Erkennung der Indischen Gebärdensprache (ISL)",go_gh:"Auf GitHub ansehen ↗",go_live:"Live-App öffnen ↗",ss_p1:"Von Mai bis Oktober 2026 war ich ML/AI Engineer Intern bei SignSetu und habe an der Erkennung der Indischen Gebärdensprache (ISL) gearbeitet, damit mehr Menschen ohne Dolmetscher im Raum verstanden werden.",ss_p2:"Ich habe eine Python- und PyTorch-Forschungspipeline debuggt, Projektdateien in ein versionskontrolliertes Repository überführt, das Laden der Trainingsdaten beschleunigt und isolierte Ablationsstudien durchgeführt, um das Eingabedesign zu steuern. Außerdem habe ich über mehrere Wochen eine Ursachenanalyse geleitet, warum die Genauigkeit zwischen Validierung und Live-Video abfiel, und am Ende Skripte und Dokumentation übergeben.",b1:"Vier Umgebungs- und Abhängigkeitsprobleme in einer Computer-Vision-Forschungspipeline diagnostiziert und gelöst, darunter eine Tensor-Shape-Abweichung, die auf ein Reproduzierbarkeitsproblem in Forschungscode eines Drittanbieters zurückging.",b2:"Eine mehrwöchige Ursachenanalyse geleitet zu einer Lücke zwischen Leistung im kontrollierten Test und in der realen Anwendung einer Computer-Vision-Pipeline, mit isolierten, reproduzierbaren Experimenten und statistischer Analyse, ohne den Produktivcode zu ändern.",b3:"Eine Reihe isolierter Ablationsexperimente durchgeführt, um Entscheidungen zu Vorverarbeitung und Modelleingabe zu steuern, und dabei jede Stufe der Pipeline konsistent gehalten. Projektdateien in ein strukturiertes, versionskontrolliertes Repository überführt und Caching ergänzt, um das Laden der Trainingsdaten zu beschleunigen.",ex_h:"Transform: Weitere Erfahrung",jam_s:"Data Science and AI Intern, 2025",jam_p:"Unter Anleitung von Professoren an KI-gestützter Datenanalyse und Anwendungen des maschinellen Lernens gearbeitet, mit Python, Machine Learning und Deep Learning auf Forschungsdaten, und Datenverarbeitungs-Workflows gestrafft. Durch optimierte Pipelines stieg die Projekteffizienz um 20 %.",tf_p:"Außerdem 2023 bis 2025: Campus Ambassador Mentor für das Techfest des IIT Bombay. Ich habe das Online-Engagement über Social Media um 25 % gesteigert, mit über 11.500 College-Botschaftern koordiniert und Techfest sowie das IIT Bombay gegenüber Studierenden vertreten.",
+ld_h:"Load: Lass uns in Kontakt treten",ld_p:"Die Daten sind sauber, das Ergebnis ist bereit. Wenn du etwas mit echten Nutzern baust, würde ich gern davon hören.",b_email:"E-Mail",b_resume:"Lebenslauf",foot:"Als Datenpipeline gebaut. Bewege die Maus, um dich umzusehen."},
+ja:{rows:"クリーニング済みの行:",hero_h:"乱れたデータを入れて、<br><em>動くシステム</em>を出す。",hero_p2:"<strong>SignSetu</strong>ではML/AIエンジニアインターンとしてインド手話の認識に取り組み、<strong>IIT Jammu</strong>ではデータサイエンス・AIインターンを務めました。アスリートの疲労と大気質に関する論文を共著し、LLMの信頼性や初心者向け投資に関するツールも作ってきました。",hero_p:"Prachiです。<strong>SRMIST</strong>で<strong>データサイエンスの修士課程</strong>に在籍しています。ノイズの多い現実世界の入力を、人が使えるものに変えるモデルとパイプラインを作っています。",hint:"スクロールしてパイプラインを動かしてください。通り抜けるものはすべてポートフォリオの一部です。",
+ab_h:"Extract:これまでの歩み",ab_p1:"私は、データの最も散らかった側で仕事をしています。もっともらしい嘘をつく言語モデル、毎回違って見える手話、誰も整理していない都市のデータ。プライバシーを重視し、アルゴリズムに依存しないプロダクトと、人をつなぐテクノロジーに惹かれており、インドの文脈で作ることが好きです。",ab_p2:"パイプラインの外では、本を読み、Substackを追い、友人と出かけ、新しい場所を旅しています。",
+ed_h:"Extract:学んだ場所",srm_s:"データサイエンス修士",imed_s:"BCA、CGPA 8.85",
+pr_h:"Transform:作ったもの",hallu_s:"二層構造のLLM幻覚検出",hallu_p:"言語モデルの回答が元の情報源に忠実かどうかを検証します。第1層のDeBERTa NLIモデルが、明確なケースを素早く判定します。判断が難しいケースは第2層に回され、Llama 3.1 8B(Groq API経由)が審査役として、判定(幻覚、または部分的な幻覚)、理由、問題のある箇所を返します。",yay_s:"初心者向け株式教育、インド優先",yay_p:"NSE/BSEの株式を、やさしい言葉とインドルピーの文脈で説明するPythonとStreamlitのアプリ。マルチエージェントLLMパイプライン(強気シナリオ、弱気シナリオ、要約、用語集、ヒンディー語のエージェント)が、yfinanceのライブデータとGoogleニュースの見出しに基づいて説明し、6つの要素からなるクイズでユーザーを「First-Step Investor」などのペルソナに分類します。",mi_s:"切り上げ型マイクロ投資シミュレーター",mi_p:"取引ごとに10ルピーまたは100ルピー単位に切り上げ、その差額を金、投資信託、貯蓄ウォレットの3つの仮想資産に振り分けるシミュレーションプラットフォーム。ポートフォリオを追跡し、成長の推移をグラフで表示します。",
+rs_h:"Transform:研究論文",fat_s:"マルチモーダル研究、共著者",fat_p:"ウェアラブルセンサーの信号と大気質データ(AQI、PM2.5、PM10)を統合して、アスリートの疲労リスクを予測するフレームワークを提案。デリーとチェンナイのCPCBデータの分析で、PM10が最も影響の大きい予測因子であることが分かりました。Prisha ShahとBlesson Samuelとの共著です。",fat_p2:"前処理で、1つのタイムスタンプが23,380回も重複するログの不具合を検出しました。SHAP分析からは、短期的なピークよりも、7日間移動平均に表れる長期的な曝露のほうが重要であることも示唆されました。",st1:"分析した都市:デリーとチェンナイ",st2:"クリーニング後の1時間ごとのレコード(デリー、元の約38,900行から)",st3:"SHAP分析で疲労リスクの最重要予測因子",hb_hint:"光るボックスをクリックしてください",hb_lab:"趣味",hb1:"読書",hb2:"Substackを読むこと",hb3:"友人やコミュニティとのつながり",hb4:"新しい場所を旅すること",iot_s:"研究論文、IMED、2023年12月",iot_p:"産業用IoTネットワークで使われている現在のデータ通信プロトコルの脆弱性を示し、データの完全性を守り、改ざんを防ぎ、デバイス間の安全で透明な通信を可能にするブロックチェーン方式を提案しました。",eh_s:"研究論文、IMED、2023年10月",eh_p:"コンピュータシステムの弱点を意図的に探すエシカルハッカーが、組織を攻撃からどう守るのか、そしてセキュリティと倫理のバランスをどう取るのかについて論じました。",
+ss_h:"Transform:SignSetuでのインターンシップ",ss_role:"ML/AIエンジニアインターン・2026年5月〜10月・インド手話(ISL)認識",go_gh:"GitHubで見る ↗",go_live:"ライブアプリを開く ↗",ss_p1:"2026年5月から10月まで、SignSetuでML/AIエンジニアインターンとして、インド手話(ISL)の認識に取り組みました。通訳がいなくても、より多くの人が理解されることを目指しています。",ss_p2:"PythonとPyTorchの研究パイプラインのデバッグ、プロジェクト資産のバージョン管理リポジトリへの移行、学習データの読み込み高速化、入力設計の指針とするための独立したアブレーション実験を行いました。また、検証時とライブ映像で精度が下がる原因を数週間かけて調査し、最後にスクリプトとドキュメントを引き継ぎました。",b1:"コンピュータビジョンの研究パイプラインで、環境と依存関係に関する4つの障害を特定して解決しました。その中には、サードパーティの研究コードの再現性の問題に起因するテンソル形状の不一致も含まれます。",b2:"コンピュータビジョンのパイプラインで、管理されたテストと実環境での性能の差の原因を、数週間かけて調査しました。本番コードは変更せず、隔離された再現可能な実験と統計分析を用いました。",b3:"前処理とモデル入力の設計判断の指針とするため、独立したアブレーション実験を一連で実施し、パイプラインの全段階で一貫性を保ちました。プロジェクト資産を構造化されたバージョン管理リポジトリに移行し、キャッシュを追加して学習データの読み込みを高速化しました。",ex_h:"Transform:その他の経験",jam_s:"データサイエンス・AIインターン、2025年",jam_p:"教授の指導のもと、AIによるデータ分析と機械学習の応用に取り組みました。研究データにPython、機械学習、深層学習を用い、データ処理のワークフローを効率化し、最適化したパイプラインでプロジェクトの効率を20%向上させました。",tf_p:"2023年から2025年まで、IIT BombayのTechfestでキャンパスアンバサダーのメンターも務めました。SNSを通じてオンラインでのエンゲージメントを25%高め、11,500人以上の大学アンバサダーと連携し、学生に向けてTechfestとIIT Bombayを紹介しました。",
+ld_h:"Load:つながりましょう",ld_p:"データは整い、出力の準備ができました。実際のユーザーに向けて何かを作っているなら、ぜひお聞かせください。",b_email:"メール",b_resume:"履歴書",foot:"データパイプラインとして作りました。マウスを動かすと周りを見渡せます。"}};
+let cur='en',hbI=-1;
+const hbEl=document.getElementById('hobby');
+function renderHobby(){if(hbI<0)return;document.getElementById('hb-l').textContent=I[cur].hb_lab;document.getElementById('hb-t').textContent=I[cur]['hb'+(hbI+1)]}
+function showHobby(i){hbI=i;renderHobby();hbEl.classList.add('on')}
+document.getElementById('hb-x').addEventListener('click',()=>{hbI=-1;hbEl.classList.remove('on')});
+function setLang(l){cur=l;document.documentElement.lang=l;
+  document.querySelectorAll('[data-i]').forEach(e=>{e.innerHTML=I[l][e.dataset.i]});
+  document.querySelectorAll('.lang button').forEach(b=>b.classList.toggle('on',b.dataset.l===l));
+  renderHobby();try{localStorage.setItem('lang',l)}catch(e){}}
+document.querySelectorAll('.lang button').forEach(b=>b.addEventListener('click',()=>setLang(b.dataset.l)));
+let l0='en';try{l0=localStorage.getItem('lang')||''}catch(e){}
+if(!I[l0]){const n=(navigator.language||'en').slice(0,2);l0=I[n]?n:'en'}
+setLang(l0);
+document.querySelectorAll('img[data-base]').forEach(img=>{const c=img.dataset.base.split(' ').flatMap(b=>['png','svg','jpg','jpeg','webp'].map(e=>b+'.'+e));let k=0;const next=()=>{if(k>=c.length){img.remove();return}img.src=c[k++]};img.onerror=next;next()});
+
+/* ---------- 3D pipeline ---------- */
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const renderer=new THREE.WebGLRenderer({canvas:document.getElementById('c'),antialias:true});
+const PR=Math.min(Math.max(devicePixelRatio,1.5),2);
+renderer.setPixelRatio(PR);
+const scene=new THREE.Scene();scene.background=new THREE.Color(0x0b1020);scene.fog=new THREE.FogExp2(0x0b1020,0.022);
+const cam=new THREE.PerspectiveCamera(65,1,0.1,200);
+const sm=x=>{x=Math.max(0,Math.min(1,x));return x*x*(3-2*x)};
+const N=innerWidth<700?3500:6500,L=80,S=4,SX=[-7,7,-6,6],SY=[3.5,3,-3.5,-3];
+const pos=new Float32Array(N*3),col=new Float32Array(N*3),rr=new Float32Array(N),ph=new Float32Array(N),z0=new Float32Array(N),gx=new Float32Array(N),gy=new Float32Array(N);
+for(let i=0;i<N;i++){rr[i]=Math.random();ph[i]=Math.random()*6.28;z0[i]=Math.random()*L;gx[i]=((i%18)-8.5);gy[i]=(((i/18|0)%12)-5.5)}
+const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.BufferAttribute(pos,3));geo.setAttribute('color',new THREE.BufferAttribute(col,3));
+const dc=document.createElement('canvas');dc.width=dc.height=32;{const g=dc.getContext('2d'),gr=g.createRadialGradient(16,16,0,16,16,16);gr.addColorStop(0,'#fff');gr.addColorStop(.5,'rgba(255,255,255,.6)');gr.addColorStop(1,'rgba(255,255,255,0)');g.fillStyle=gr;g.fillRect(0,0,32,32)}
+const dotTex=new THREE.CanvasTexture(dc);
+const cc=document.createElement('canvas');cc.width=cc.height=64;{const g=cc.getContext('2d');g.fillStyle='#fff';g.beginPath();g.arc(32,32,28,0,6.3);g.fill()}
+const crispTex=new THREE.CanvasTexture(cc);
+const pm=new THREE.PointsMaterial({size:3.2*PR,sizeAttenuation:false,map:crispTex,alphaTest:.5,vertexColors:true,transparent:true,opacity:.9,depthWrite:false,blending:THREE.AdditiveBlending});scene.add(new THREE.Points(geo,pm));
+// extract: four small database stacks the data is pulled from
+for(let k=0;k<S;k++)for(let j=0;j<3;j++){const d=new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.CylinderGeometry(.7,.7,.2,20)),new THREE.LineBasicMaterial({color:0xf4b53f,transparent:true,opacity:.5}));d.position.set(SX[k],SY[k]-.3+j*.32,-1);scene.add(d)}
+// transform gates
+const gates=[];[-26,-44].forEach((z,k)=>{
+  const g=new THREE.Mesh(new THREE.TorusGeometry(8,.05,8,90),new THREE.MeshBasicMaterial({color:k?0x7fe3d6:0xf4b53f}));g.position.z=z;scene.add(g);gates.push(g);
+  const g2=new THREE.Mesh(new THREE.TorusGeometry(6.2,.03,8,90),new THREE.MeshBasicMaterial({color:0xf3efe6,transparent:true,opacity:.5}));g2.position.z=z;scene.add(g2);gates.push(g2)});
+// load: glowing data boxes, each holds a hobby
+const HB=[[3.4,1.6,-61],[5.6,-.4,-63],[3.8,-2,-64.5],[6.2,2.2,-65]],boxes=[],halos=[];
+HB.forEach((q,i)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(1.4,1.4,1.4),new THREE.MeshBasicMaterial({color:0x7fe3d6,transparent:true,opacity:0}));m.position.set(q[0],q[1],q[2]);m.userData.i=i;
+  m.add(new THREE.LineSegments(new THREE.EdgesGeometry(m.geometry),new THREE.LineBasicMaterial({color:0xffffff,transparent:true,opacity:0})));
+  const h=new THREE.Sprite(new THREE.SpriteMaterial({map:dotTex,color:0x7fe3d6,transparent:true,opacity:0,depthWrite:false,blending:THREE.AdditiveBlending}));h.position.copy(m.position);
+  scene.add(m,h);boxes.push(m);halos.push(h)});
+const ray=new THREE.Raycaster(),mv=new THREE.Vector2();let hover=null;
+function pick(e){mv.set(e.clientX/innerWidth*2-1,-(e.clientY/innerHeight)*2+1);ray.setFromCamera(mv,cam);const h=ray.intersectObjects(boxes,false);return h.length?h[0].object:null}
+const A=new THREE.Color(0xf4b53f),B=new THREE.Color(0x7fe3d6),tmp=new THREE.Color();
+let sp=0,spT=0,mx=0,my=0,tmx=0,tmy=0;
+function size(){renderer.setSize(innerWidth,innerHeight,false);cam.aspect=innerWidth/innerHeight;cam.updateProjectionMatrix()}
+addEventListener('resize',size);size();
+addEventListener('scroll',()=>{const h=document.documentElement.scrollHeight-innerHeight;spT=h>0?scrollY/h:0},{passive:true});
+addEventListener('pointermove',e=>{tmx=(e.clientX/innerWidth-.5)*2;tmy=(e.clientY/innerHeight-.5)*2;hover=(sp>.75&&!e.target.closest('.card,.hud,#hobby'))?pick(e):null;document.body.style.cursor=hover?'pointer':''});
+addEventListener('click',e=>{if(e.target.closest('.card,.hud,#hobby,a,button')||sp<.75)return;const o=pick(e);if(o)showHobby(o.userData.i)});
+const hint=document.getElementById('hint2');
+let lite=false,Nv=N,fr=0,acc=0,last=performance.now();
+const liteBtn=document.getElementById('lite');
+function setLite(v){lite=v;Nv=v?Math.floor(N*.3):N;geo.setDrawRange(0,Nv);renderer.setPixelRatio(v?1:PR);pm.size=3.2*(v?1:PR);size();liteBtn.setAttribute('aria-pressed',String(v))}
+liteBtn.addEventListener('click',()=>setLite(!lite));
+const st=[0,1,2].map(i=>document.getElementById('s'+i)),rc=document.getElementById('rc'),clock=new THREE.Clock();
+function frame(){
+  const t=reduce?0:clock.getElapsedTime();sp+=(spT-sp)*.06;mx+=(tmx-mx)*.05;my+=(tmy-my)*.05;
+  const now=performance.now(),dt=now-last;last=now;
+  if(!lite&&fr<140){fr++;if(fr>40)acc+=dt;if(fr===140&&acc/100>36)setLite(true)}
+  for(let i=0;i<Nv;i++){
+    const z=-((z0[i]+t*2.2)%L),k=sm((-z-26)/22),e=1-sm(-z/30),q=i%S;
+    const ang=ph[i]+t*1.1+z*.35,r=.5+rr[i]*2.2*(e*.7+.3);
+    pos[i*3]=(SX[q]*e+Math.cos(ang)*r)*(1-k)+gx[i]*k;
+    pos[i*3+1]=(SY[q]*e+Math.sin(ang)*r)*(1-k)+gy[i]*k;
+    pos[i*3+2]=z;
+    tmp.copy(A).lerp(B,k);const f=.55+.45*k;col[i*3]=tmp.r*f;col[i*3+1]=tmp.g*f;col[i*3+2]=tmp.b*f}
+  geo.attributes.position.needsUpdate=true;geo.attributes.color.needsUpdate=true;
+  gates.forEach((g,i)=>{g.rotation.z=t*(i%2?-.5:.35)});
+  const cz=6-sp*58;cam.position.set(mx*1.6,-my,cz);cam.lookAt(mx*3,-my*2,cz-12);
+  const vis=sm((sp-.7)/.18);
+  boxes.forEach((b,i)=>{const hv=hover===b?1.18:1;b.rotation.y=t*.5+i;b.rotation.x=t*.3;b.scale.setScalar(hv);b.material.opacity=.5*vis;b.children[0].material.opacity=vis;const sc=(4.2+Math.sin(t*2.2+i*1.7)*.7)*hv;halos[i].scale.set(sc,sc,1);halos[i].material.opacity=.75*vis});
+  hint.classList.toggle('show',sp>.8);
+  renderer.render(scene,cam);
+  const g=sp<.3?0:sp<.86?1:2;st.forEach((e,i)=>e.classList.toggle('on',i===g));
+  rc.textContent=Math.round(sp*48210).toLocaleString('en-IN');
+  requestAnimationFrame(frame)}
+frame();
+})();
+</script>
+</body>
+</html>
